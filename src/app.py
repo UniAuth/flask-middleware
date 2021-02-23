@@ -1,6 +1,7 @@
 from flask import Flask, request, Response, redirect
 from interface.config import Config
 from interface.authenticate import AuthenticateParams
+from minions.minions import getProfileData
 
 class UniAuth :
     configs = Config
@@ -34,13 +35,24 @@ class UniAuth :
          else:
              return item[0]
 
-    def authenticate(self,name: str):
+    def authenticate(self,name: str,function):
         config = self.__getConfigByName(name)
 
         def function(req = request, res = Response, next = next()):
             loginUrl = f'{config.url}/{config.endpoint.auth}?client_id={config.clientId}&redirect_uri={config.redirectUri}'    
             redirect(loginUrl)
             next()
-        return function()
+        
+
+    
+    def callback(self,name: str,function):
+        Config = self.__getConfigByName(name)
+        async def function(req = request, res = Response, next = next()):
+            accessToken = req.args.get('access_token')
+            profileDetails = await getProfileData(config,accessToken)
+            await config.processor(profileDetails,next)
+
+
+
 
 
