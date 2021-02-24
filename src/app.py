@@ -1,11 +1,11 @@
-from flask import Flask, request, Response, redirect
-from interface.config import Config
-from interface.authenticate import AuthenticateParams
-from minions.minions import getProfileData
+from flask import Flask, Request, Response, redirect
+from .interface.config import Config
+from .interface.authenticate import AuthenticateParams
+from .minions.minions import getProfileData
 
 class UniAuth :
-    configs = Config
-    def __init__(self):
+    configs = []
+    def __init__(self,configs : list):
         self.config = configs
 
 
@@ -25,9 +25,9 @@ class UniAuth :
                 'profile': 'account/o/access',
             }
 
-    def __getConfigByName(self,name:str,config : Config):
-         item =  filter((lambda x : config.name == name ),config)
-
+    def __getConfigByName(self,name:str):
+         item =  list(filter((lambda x : x['name'] == name ),self.config))
+         print(item,"hehehe")
          if (len(item) == 0) :
              raise Exception(f'Config named {name} was not found')
          elif(len(item)>1):
@@ -35,24 +35,20 @@ class UniAuth :
          else:
              return item[0]
 
-    def authenticate(self,name: str,function):
+    def authenticate(self,name: str):
         config = self.__getConfigByName(name)
-
-        def function(req = request, res = Response, next = next()):
-            loginUrl = f'{config.url}/{config.endpoint.auth}?client_id={config.clientId}&redirect_uri={config.redirectUri}'    
-            redirect(loginUrl)
-            next()
-        
+        loginUrl = f'{self.config[0]["url"]}/{self.config[0]["endpoint"]["auth"]}?client_id={self.config[0]["clientId"]}&redirect_uri={self.config[0]["redirectUri"]}'    
+        print(loginUrl)
+        return loginUrl       
 
     
     def callback(self,name: str,function):
         Config = self.__getConfigByName(name)
-        async def function(req = request, res = Response, next = next()):
+        async def function(req:Request, res:Response):
             accessToken = req.args.get('access_token')
             profileDetails = await getProfileData(config,accessToken)
-            await config.processor(profileDetails,next)
-
-
+            await config.processor(profileDetails)
+        return function(Request,Response)
 
 
 

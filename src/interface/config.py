@@ -17,5 +17,5 @@ class configInterface:
             "profile" : str
         }
 
-     def processor(self,profile: None, next : next()): None
+     def processor(self,profile): None
 Config = configInterface()  
