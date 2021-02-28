@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-
-@dataclass
 class configInterface:
      def __init__(self):
         self.name = str
