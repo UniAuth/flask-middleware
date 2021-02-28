@@ -1,19 +1,17 @@
 from flask import Flask, jsonify , Request, Response,redirect
-from src.app import UniAuth as Auth
+from ..app import UniAuth as Auth
 import os
 app = Flask(__name__)
-
-def processor(profile):
-    print('received user profile > ', profile)
-
 uniAuth = Auth([{
     "name": 'server1',
     "url": 'http://localhost:5000',
     "clientId": '6032634dd05be80880499244',
     "clientSecret": '336fe562-33bf-4448-b87d-d17105eabb25',
     "redirectUri": 'www.facebook.com',
-    "processor":  processor(profile = str),
-
+    # "processor": def processor(profile: str, next): 
+    #                 print('received user profile > ', profile);
+    #                 next();
+    
     "endpoint": {
       'auth': 'account/o/login',
       'profile': 'account/o/access',
