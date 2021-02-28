@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-
-@dataclass
 class configInterface:
      def __init__(self):
         self.name = str
@@ -17,5 +14,5 @@ class configInterface:
             "profile" : str
         }
 
-     def processor(self,profile: None, next : next()): None
+     def processor(self,profile): None
 Config = configInterface()  

@@ -1,4 +1,4 @@
-from interface.config import Config
+from src.interface.config import Config
 from urllib import request,parse
 import json
 
